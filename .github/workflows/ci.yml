@@ -1,0 +1,23 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: sudo apt-get update && sudo apt-get install -y libopenblas-dev python3-pytest
+
+      - name: Build Project
+        run: make build
+
+      - name: Run Performance Benchmark
+        run: ./benchmark
+
+      - name: Run Python Interface Tests
+        run: pytest test_blas.py
