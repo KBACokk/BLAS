@@ -3,6 +3,11 @@ import ctypes.util
 import numpy as np
 import pytest
 
+
+# Строка для проверки корректности работы CI
+
+Намеренная ошибка компиляции.
+
 def getLib():
     libname = ctypes.util.find_library("openblas")
 
