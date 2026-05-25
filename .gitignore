@@ -1,0 +1,11 @@
+benchmark
+benchmark.exe
+*.o
+*.obj
+*.exe
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+*.pyc
+.DS_Store

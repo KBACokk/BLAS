@@ -3,7 +3,29 @@
 #include <chrono>
 #include <cmath>
 #include <iomanip>
+#include <cstdlib>
+#include <cstring>
 #include <cblas.h>
+
+static int envInt(const char* name, int fallback) {
+    const char* v = std::getenv(name);
+    if (!v || !*v) return fallback;
+    return std::atoi(v);
+}
+
+static std::vector<int> envThreadList(const char* name, std::vector<int> fallback) {
+    const char* v = std::getenv(name);
+    if (!v || !*v) return fallback;
+    std::vector<int> out;
+    const char* start = v;
+    while (*start) {
+        out.push_back(std::atoi(start));
+        const char* comma = std::strchr(start, ',');
+        if (!comma) break;
+        start = comma + 1;
+    }
+    return out.empty() ? fallback : out;
+}
 
 template <typename T>
 void trsm(int M, int N, T alpha, const T* A, int lda, T* B, int ldb) {
@@ -25,10 +47,10 @@ double geometric(const std::vector<double>& values) {
 }
 
 int main() {
-    const int size = 500;
+    const int size = envInt("BENCHMARK_SIZE", 500);
     const double alpha = 1.0;
-    const int iterations = 10;
-    std::vector<int> threads_list = {1, 2, 4, 8, 16};
+    const int iterations = envInt("BENCHMARK_ITERATIONS", 10);
+    std::vector<int> threads_list = envThreadList("BENCHMARK_THREADS", {1, 2, 4, 8, 16});
 
     std::vector<double> A(size * size, 1.0);
     std::vector<double> B_orig(size * size, 2.0);

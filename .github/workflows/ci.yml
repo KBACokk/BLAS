@@ -7,17 +7,31 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      BENCHMARK_SIZE: "80"
+      BENCHMARK_ITERATIONS: "2"
+      BENCHMARK_THREADS: "1,2"
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install -y libopenblas-dev python3-pytest
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
-      - name: Build Project
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libopenblas-dev
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build project
         run: make build
 
-      - name: Run Performance Benchmark
-        run: ./benchmark
+      - name: Run interface tests
+        run: make test_interface
 
-      - name: Run Python Interface Tests
-        run: pytest test_blas.py
+      - name: Run performance tests
+        run: make test_performance
